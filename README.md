@@ -6,3 +6,4 @@
 5. Hangman
 6. TicTacToe
 7. Alpha, Beta, Gamma
+8. TreasureHunt
