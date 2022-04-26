@@ -1,5 +1,6 @@
 import random
 
+# Creates the treasure locations
 def compute_choices(max_rows, max_cols, userRow, userCol):
     user_choices = []
     user_choices.append([userRow,userCol])
@@ -11,6 +12,7 @@ def compute_choices(max_rows, max_cols, userRow, userCol):
         user_choices.append([userRow+1,userCol+1])
     return user_choices 
 
+# Creates the board at the start of the game
 def draw_initial_board(rows, columns):
     board=[]
     for i in range(rows):
@@ -18,6 +20,7 @@ def draw_initial_board(rows, columns):
         print("~ "*columns)
     return board
 
+# Creates the board after the user has made a choice
 def draw_current_board(board):
     for i in range(len(board)):
         for j in range(len(board[i])):
@@ -31,6 +34,7 @@ def draw_current_board(board):
                 print("@ ", end="")
         print("\n")
 
+# Checks if the user has won the game
 def check_win(board, treasure_locations):
     treasures_found=0
     win_status=True
@@ -41,6 +45,8 @@ def check_win(board, treasure_locations):
         else:
             win_status=win_status&False
     return win_status, treasures_found
+
+# Checks if the user has found a treasure
 def check_treasure(board, user_choices, treasure_locations):
    
     exactTreasure=False
@@ -71,6 +77,7 @@ def check_treasure(board, user_choices, treasure_locations):
                 board[choice[0]][choice[1]] = "@"
     return board
 
+# Main function
 max_rows=6
 max_cols=16
 number_of_treasures=4
@@ -87,6 +94,7 @@ for i in range(number_of_treasures):
 max_turns=max_rows*max_cols//4-4
 turn_num=0
 
+# Ineraction with the user
 print("Welcome to the Treasure Hunt!\n You have", max_turns, "turns to find all the treasures.\n @ = You have not found a treasure yet.\n # = You have found a treasure, but you are not sure if it is the correct one.\n $ = You have found the correct treasure.\n ~ = You have not yet been to this location.\n Good luck! \n")
 board=draw_initial_board(max_rows,max_cols)
 for turn_num in range(max_turns):
