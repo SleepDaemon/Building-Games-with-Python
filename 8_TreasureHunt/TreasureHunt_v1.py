@@ -1,7 +1,9 @@
 import random
 
-# Creates the treasure locations
 def compute_choices(max_rows, max_cols, userRow, userCol):
+    '''
+    Computes the next 3 spots where the user has chosen
+    '''
     user_choices = []
     user_choices.append([userRow,userCol])
     if userCol < max_cols-1:
@@ -12,16 +14,20 @@ def compute_choices(max_rows, max_cols, userRow, userCol):
         user_choices.append([userRow+1,userCol+1])
     return user_choices 
 
-# Creates the board at the start of the game
 def draw_initial_board(rows, columns):
+    '''
+    Creates the starting board from the beginning of the game
+    '''
     board=[]
     for i in range(rows):
         board.append(["0"]*columns)
         print("~ "*columns)
     return board
 
-# Creates the board after the user has made a choice
 def draw_current_board(board):
+    '''
+    Updates the board after the user has made a choice
+    '''
     for i in range(len(board)):
         for j in range(len(board[i])):
             if board[i][j] == "0":
@@ -34,8 +40,10 @@ def draw_current_board(board):
                 print("@ ", end="")
         print("\n")
 
-# Checks if the user has won the game
 def check_win(board, treasure_locations):
+    '''
+    Checks if the user has won the game
+    '''
     treasures_found=0
     win_status=True
     for treasure in treasure_locations:
@@ -48,7 +56,9 @@ def check_win(board, treasure_locations):
 
 # Checks if the user has found a treasure
 def check_treasure(board, user_choices, treasure_locations):
-   
+    '''
+    Checks if the user has found a treasure
+    '''
     exactTreasure=False
     for treasure in treasure_locations:
         treasure_row=treasure[0]
