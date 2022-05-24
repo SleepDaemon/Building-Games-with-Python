@@ -16,6 +16,9 @@ board_state=[
 ]
 
 def draw_board():
+    '''
+    Draws the board
+    '''
     line_string_0="".join(str(x) for x in board_state[0])
     line_string_1="".join(str(x) for x in board_state[1])
     line_string_2="".join(str(x) for x in board_state[2])
@@ -45,12 +48,18 @@ def modify(r,c,symbol):
     board_state[r-1][c-1]=symbol
 
 def check_occupy(r,c):
+    '''
+    Checks if the cell is occupied
+    '''
     if board_state[r-1][c-1]!=" ":
         return True
     else:
         return False
 
 def count_symbol(symbol):
+    '''
+    Counts the number of symbol (X or O as specified) in the board
+    '''
     count=0
     for row in board_state:
         for cell in row:
@@ -59,6 +68,9 @@ def count_symbol(symbol):
     return count
 
 def check_win():
+    '''
+    Counts the number of Xs and Os in the board, and returns the winner
+    '''
     num_xs=count_symbol("X")
     num_os=count_symbol("O")
     print("X:",num_xs)
@@ -74,7 +86,9 @@ def check_win():
         return "continue"
 
 def check_neighbours(r,c,symbol):
-    # looking column wise first
+    '''
+    Checks the neighbours of the cell, looks vertically & horizontally for the same symbol
+    '''
     match_coords=[]
     row_num=r-2
     while row_num >=0:
@@ -113,6 +127,9 @@ def check_neighbours(r,c,symbol):
     return match_coords
 
 def swap_symbols(r,c,match_coords,symbol):
+    '''
+    Swaps the symbols of the cells in the match_coords list
+    '''
     for coord in match_coords:
         if coord[2]=="up":
             cur_row=r-1
@@ -142,6 +159,9 @@ def swap_symbols(r,c,match_coords,symbol):
                 cur_col=cur_col+1
 
 def check_Xs_Os(row):
+    '''
+    Checks if the row has Xs and Os, for the computer to find potential advantage points
+    '''
     string_row="".join(str(x) for x in row)
     # looking for the pattern of 1 space, 1 or more Xs followed by 1 ore more Os
     p = re.compile(" X+O+")
@@ -168,6 +188,9 @@ def check_Xs_Os(row):
     return None, None, None
 
 def brain(board_state):
+    '''
+    The computer's brain
+    '''
     rowIndex=0
     for row in board_state:
         start, group, pattern = check_Xs_Os(row)
@@ -177,6 +200,9 @@ def brain(board_state):
     return None, None
 
 def find_corner(board_state):
+    '''
+    Finds the first empty sides
+    '''
     for i in range(len(board_state)):
         for j in [0,7]:
             if board_state[i][j]==" ":
@@ -184,6 +210,9 @@ def find_corner(board_state):
     return None, None
 
 def find_top_bottom(board_state):
+    '''
+    Find empty space in the top and bottom rows
+    '''
     for i in [0,7]:
         for j in range(len(board_state[i])):
             if board_state[i][j]==" ":
@@ -193,6 +222,10 @@ def find_top_bottom(board_state):
 draw_board()
 
 while True:
+    '''
+    The main game loop
+    '''
+    # player's turn
     user_row=input("Enter row: ")
     user_column=input("Enter column: ")
     user_row=int(user_row)
@@ -201,7 +234,8 @@ while True:
     if is_occupy:
         print("Occupied")
         continue
-
+    
+    # modify the board to user input
     modify(user_row,user_column,"X")
     match_coords=check_neighbours(user_row, user_column, "X")
     swap_symbols(user_row,user_column,match_coords,"X")
@@ -211,7 +245,8 @@ while True:
         break
 
     is_occupy=True
-    
+
+    # computer's turn
     while is_occupy==True:
         computer_row, computer_column=brain(board_state)
         if computer_row==None:
@@ -222,6 +257,7 @@ while True:
             computer_row=random.randint(1,8)
             computer_column=random.randint(1,8)
         is_occupy=check_occupy(computer_row,computer_column)
+    # modify the board to computer input
     modify(computer_row,computer_column,"O")
     match_coords=check_neighbours(computer_row, computer_column, "O")
     swap_symbols(computer_row,computer_column,match_coords,"O")
