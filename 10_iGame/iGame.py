@@ -1,8 +1,8 @@
+import random
+import re
 
 rows = 8
 columns = 8
-
-print(rows, columns)
 
 board_state=[
     [" "," "," "," "," "," "," "," "],
@@ -43,6 +43,35 @@ def modify(r,c,symbol):
     So we do r-1, c-1
     '''
     board_state[r-1][c-1]=symbol
+
+def check_occupy(r,c):
+    if board_state[r-1][c-1]!=" ":
+        return True
+    else:
+        return False
+
+def count_symbol(symbol):
+    count=0
+    for row in board_state:
+        for cell in row:
+            if cell == symbol:
+                count=count+1
+    return count
+
+def check_win():
+    num_xs=count_symbol("X")
+    num_os=count_symbol("O")
+    print("X:",num_xs)
+    print("O:",num_os)
+    if num_xs+num_os==(rows*columns):
+        if num_xs>num_os:
+            return "X"
+        elif num_xs<num_os:
+            return "O"
+        else:
+            return "Draw"
+    else:
+        return "continue"
 
 def check_neighbours(r,c,symbol):
     # looking column wise first
@@ -112,14 +141,96 @@ def swap_symbols(r,c,match_coords,symbol):
                 board_state[cur_row][cur_col]=symbol
                 cur_col=cur_col+1
 
+def check_Xs_Os(row):
+    string_row="".join(str(x) for x in row)
+    # looking for the pattern of 1 space, 1 or more Xs followed by 1 ore more Os
+    p = re.compile(" X+O+")
+    for m in p.finditer(string_row):
+        # print("found p1 at", m.start(), m.group(), row)
+        return m.start(), m.group(), "p1"
+
+    # looking for the pattern of 1 or more Os, 1 or more Xs followed by 1 space
+    p = re.compile("O+X+ ")
+    for m in p.finditer(string_row):
+        # print("found p2 at", m.start(), m.group(), row)
+        return m.start()+len(m.group())-1, m.group(), "p2"
+    
+    p=re.compile(" X+ +")
+    for m in p.finditer(string_row):
+        # print("found p3 at", m.start(), m.group(), row)
+        return m.start(), m.group(), "p3"
+        
+    p=re.compile(" +X+ ")    
+    for m in p.finditer(string_row):
+        # print("found p4 at", m.start(), m.group(), row)
+        return m.start()+len(m.group())-1, m.group(), "p4"
+        
+    return None, None, None
+
+def brain(board_state):
+    rowIndex=0
+    for row in board_state:
+        start, group, pattern = check_Xs_Os(row)
+        if start!=None:
+            return rowIndex+1, start+1
+        rowIndex+=1      
+    return None, None
+
+def find_corner(board_state):
+    for i in range(len(board_state)):
+        for j in [0,7]:
+            if board_state[i][j]==" ":
+                return i+1, j+1
+    return None, None
+
+def find_top_bottom(board_state):
+    for i in [0,7]:
+        for j in range(len(board_state[i])):
+            if board_state[i][j]==" ":
+                return i+1, j+1
+    return None, None
+
 draw_board()
 
-user_row=input("Enter row: ")
-user_column=input("Enter column: ")
-user_row=int(user_row)
-user_column=int(user_column)
+while True:
+    user_row=input("Enter row: ")
+    user_column=input("Enter column: ")
+    user_row=int(user_row)
+    user_column=int(user_column)
+    is_occupy=check_occupy(user_row,user_column)
+    if is_occupy:
+        print("Occupied")
+        continue
 
-modify(user_row,user_column,"X")
-match_coords=check_neighbours(user_row, user_column, "X")
-swap_symbols(user_row,user_column,match_coords,"X")
-draw_board()
+    modify(user_row,user_column,"X")
+    match_coords=check_neighbours(user_row, user_column, "X")
+    swap_symbols(user_row,user_column,match_coords,"X")
+    draw_board()
+    win=check_win()
+    if win !="continue":
+        break
+
+    is_occupy=True
+    
+    while is_occupy==True:
+        computer_row, computer_column=brain(board_state)
+        if computer_row==None:
+            computer_row, computer_column=find_corner(board_state)
+        if computer_row==None:
+            computer_row, computer_column=find_top_bottom(board_state)
+        if computer_row == None:
+            computer_row=random.randint(1,8)
+            computer_column=random.randint(1,8)
+        is_occupy=check_occupy(computer_row,computer_column)
+    modify(computer_row,computer_column,"O")
+    match_coords=check_neighbours(computer_row, computer_column, "O")
+    swap_symbols(computer_row,computer_column,match_coords,"O")
+    print('computer choice: ',computer_row,computer_column)
+    draw_board()
+    win=check_win()
+    if win!="continue":
+        break
+if win == "X":
+    print("X wins")
+elif win == "O":
+    print("O wins")
