@@ -1,5 +1,6 @@
 import random
 import re
+import numpy as np
 
 rows = 8
 columns = 8
@@ -191,13 +192,28 @@ def brain(board_state):
     '''
     The computer's brain
     '''
+    possible_moves=[]
+
     rowIndex=0
     for row in board_state:
         start, group, pattern = check_Xs_Os(row)
         if start!=None:
-            return rowIndex+1, start+1
-        rowIndex+=1      
-    return None, None
+            print("Horizontal")
+            possible_moves.append([rowIndex+1, start+1])
+            # return rowIndex+1, start+1
+        rowIndex+=1   
+    # vertical search
+    rowIndex=0
+    board_state_transpose=np.transpose(board_state)
+    for row in board_state_transpose:
+        start, group, pattern = check_Xs_Os(row)
+        if start!=None:
+            print("Vertical")
+            possible_moves.append([start+1, rowIndex+1])
+            # return start+1, rowIndex+1
+        rowIndex+=1
+    return possible_moves
+    # return None, None
 
 def find_corner(board_state):
     '''
@@ -248,15 +264,25 @@ while True:
 
     # computer's turn
     while is_occupy==True:
-        computer_row, computer_column=brain(board_state)
-        if computer_row==None:
-            computer_row, computer_column=find_corner(board_state)
-        if computer_row==None:
-            computer_row, computer_column=find_top_bottom(board_state)
-        if computer_row == None:
-            computer_row=random.randint(1,8)
-            computer_column=random.randint(1,8)
+        list_moves=brain(board_state)
+        # find corner
+        computer_row, computer_column=find_corner(board_state)
+        if computer_row != None:
+            list_moves.append([computer_row, computer_column])
+        # find top and bottom
+        computer_row, computer_column=find_top_bottom(board_state)
+        if computer_row != None:
+           list_moves.append([computer_row, computer_column])
+        # random move
+        computer_row=random.randint(1,8)
+        computer_column=random.randint(1,8)
+        list_moves.append([computer_row, computer_column])
+        # choose one of the possible moves
+        selected_move=random.choice(list_moves)
+        computer_row=selected_move[0]
+        computer_column=selected_move[1]
         is_occupy=check_occupy(computer_row,computer_column)
+   
     # modify the board to computer input
     modify(computer_row,computer_column,"O")
     match_coords=check_neighbours(computer_row, computer_column, "O")
