@@ -38,8 +38,10 @@ def NA():
                 north = input('Are you from the United States? ')
                 if north == 'yes':
                     print('I think you are from the United States!')
+                    break
                 else:
                     print('I think you are from Canada!')
+                    break
             elif north == 'no':
                 north = input('Are you from Mexico? ')
                 if north == 'yes':
@@ -47,6 +49,7 @@ def NA():
                     break
                 elif north == 'no':
                     print('I think you are from a country that I do not know! Narnia???')
+                    break
         except ValueError:
             print("Invalid input, only 'yes' or 'no'")
             continue
